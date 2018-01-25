@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#8b0000">
+  <meta name="msapplication-TileColor" content="#8b0000">
+  <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+  <meta name="theme-color" content="#8b0000">
+
+  <title>Mutuually Assured Destruction - The Card Game</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata|Noto+Sans" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/init.js"></script>
+
+  <script>
+
+  function getCookie(cname) {
+      var name = cname + "=";
+      var ca = document.cookie.split(';');
+      for(var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+          }
+      }
+      return "";
+  }
+
+  function checkCookie() {
+      var user = getCookie("iname");
+      if (user != "") {
+          Materialize.toast("Hey " + user + "! Welcome back.", 3000);
+          $("#wname").html("Hey " + user + "!");
+          $("#menumessage").html("Hey " + user + "! Welcome back.");
+
+          $("#menushow").show();
+          $("#signup").hide();
+
+          if(!getCookie('iaddtohome')) {
+              $("#addtohome").html("Add Icebreakr To Your Homescreen");
+          }
+      } else {
+          $("#signup").show();
+          $("#menushow").hide();
+      }
+  }
+
+
+  </script>
+
+  <script>
+  $(document).ready(function() {
+  $('.modal-trigger').leanModal();
+});
+  </script>
+
+
+</head>
+<body style="background-color: #860000">
+  <div class="valign-wrapper row login-box">
+    <div class="col s10 pull-s1 m6 pull-m3 l4 pull-l4" style="background-color: #fff; padding: 50px; border-radius: 10px;">
+
+        <div id="start">
+          <p id="countdown" class="flow-text" style="font-family: 'Noto Sans', sans-serif; color: #860000"><b>It Looks Like You Don't Have Enough People To Play</b></p>
+          <a class="waves-effect waves-light btn-flat" style="color: #FFF; background-color: #860000" href="name.html">Add More</a>
+        </div>
+
+        <div id="tooMany">
+          <p id="countdown" class="flow-text" style="font-family: 'Abel', sans-serif; color: #860000">You Should Probably Play This With Less People</p>
+        </div>
+
+        <div id="cardAm">
+          <p id="giveEachPlayer" class="flow-text" style="font-family: 'Abel', sans-serif; color: #860000">Give Each Player [] Cards</p>
+          <p id="putOnSide" class="flow-text" style="font-family: 'Abel', sans-serif; color: #860000">Remove [] Cards From The Pile</p>
+          <a class="waves-effect waves-light btn-flat" style="color: #FFF; background-color: #860000" onclick="clockStart()">Next</a>
+        </div>
+
+        <div id="clock">
+          <i id="timer" style="font-size:60px; color: #860000" class="material-icons" onclick='timer()'>alarm</i>
+          <p id="clockText" class="flow-text" style="font-family: 'Abel', sans-serif; color: #860000">Click The Clock Above To Start Timing</p>
+          <div id="clockActions">
+            <a class="waves-effect waves-light btn-flat" style="color: #FFF; background-color: #860000" onclick="deal()">Deal</a>
+            <a class="waves-effect waves-light btn-flat" style="color: #FFF; background-color: #860000" onclick="noDeal()">No Deal</a>
+          </div>
+
+          <script>
+          $("#clockActions").hide();
+          </script>
+        </div>
+
+        <script>
+        function clockStart() {
+          $('#cardAm').fadeOut();
+          $('#clock').fadeIn();
+        }
+
+        function deal() {
+          clearTimeout(timerId);
+          $("#clockActions").fadeOut();
+          document.getElementById("timer").innerHTML = "hourglass_full";
+          $('#clockText').html('Deal Made! Click the clock again for the next round.');
+        }
+
+        function noDeal() {
+          clearTimeout(timerId);
+          $("#clockActions").fadeOut();
+          document.getElementById("timer").innerHTML = "hourglass_full";
+          $('#clockText').html('No Deal Made! Give card ' + Math.floor((Math.random() * 30) + 1) + ' to the player to your left. Count from the left hand side of your hand.');
+        }
+
+      var timeLeft = 0;
+      var timerId;
+      var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+
+      function timer() {
+        $("#clockActions").fadeIn();
+      document.getElementById("timer").innerHTML = "hourglass_empty";
+      timeLeft = 60;
+      clearTimeout(timerId);
+      timerId = setInterval(countdown, 1000);
+      }
+
+      function countdown() {
+            $('#clockText').html('You have only ' + timeLeft + ' seconds to make a deal.');
+            document.getElementById("timer").innerHTML = "hourglass_full";
+            if (timeLeft == 0) {
+              clearTimeout(timerId);
+              document.getElementById("timer").innerHTML = "hourglass_full";
+              beep(125, 500, 1, "triangle");
+              alert("Time is up! Pencils And Pens Down!");
+              document.getElementById('countdown').innerHTML = "Time's up!";
+            } else if (timeLeft == 1) {
+              $('#clockText').html('You have only ' + timeLeft + ' second to make a deal.');
+              timeLeft--;
+            } else {
+              if(timeLeft % 10 == 0)
+              {
+                beep(125, 600, 1, "triangle");
+              }
+                $('#clockText').html('You have only ' + timeLeft + ' seconds to make a deal.');
+                timeLeft--;
+              }
+      }
+      function beep(duration, frequency, volume, type, callback) {
+      var oscillator = audioCtx.createOscillator();
+      var gainNode = audioCtx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      if (volume){gainNode.gain.value = volume;};
+      if (frequency){oscillator.frequency.value = frequency;}
+      if (type){oscillator.type = type;}
+      if (callback){oscillator.onended = callback;}
+
+      oscillator.start();
+      setTimeout(function(){oscillator.stop()}, (duration ? duration : 500));
+      };
+
+      $("#tooMany").hide();
+      $("#cardAm").hide();
+      $("#clock").hide();
+      $("#start").hide();
+
+      if((getCookie("nameList") != "")&&(getCookie("nameList") != null)) {
+        var names = JSON.parse(getCookie("nameList"));
+      } else {
+        var names = [];
+      }
+
+      if(names.length < 2) {
+        $("#start").fadeIn();
+      } else if(names.length > 6) {
+        $("#tooMany").fadeIn();
+      } else {
+        $("#cardAm").fadeIn();
+        if(names.length == 2){
+          $("#giveEachPlayer").html("Give Each Player 12 Cards")
+          $("#putOnSide").html("Remove 4 Cards From The Pile");
+        } else if(names.length == 3){
+          $("#giveEachPlayer").html("Give Each Player 8 Cards")
+          $("#putOnSide").html("Remove 3 Cards From The Pile");
+        } else if(names.length == 4){
+          $("#giveEachPlayer").html("Give Each Player 6 Cards")
+          $("#putOnSide").html("Remove 2 Cards From The Pile");
+        } else if(names.length == 5){
+          $("#giveEachPlayer").html("Give Each Player 5 Cards")
+          $("#putOnSide").html("Remove 2 Cards From The Pile");
+        } else if(names.length == 6){
+          $("#giveEachPlayer").html("Give Each Player 5 Cards")
+          $("#putOnSide").html("Remove 2 Cards From The Pile");
+        }
+      }
+      </script>
+
+    </div>
+
+  </div>
+
+  <style>
+  html, body, .login-box {
+    height: 100%;
+  }
+  </style>
+
+  </body>
+</html>

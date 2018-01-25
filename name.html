@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#8b0000">
+  <meta name="msapplication-TileColor" content="#8b0000">
+  <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+  <meta name="theme-color" content="#8b0000">
+
+  <title>Mutuually Assured Destruction - The Card Game</title>
+
+  <!-- CSS  -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata|Noto+Sans" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="js/materialize.js"></script>
+  <script src="js/init.js"></script>
+
+  <script>
+  function setCookie(cname, cvalue, exdays) {
+      //alert("Setting Cookie!");
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays*24*60*60*1000));
+      var expires = "expires="+ d.toUTCString();
+      document.cookie = cname + "=" + cvalue + "; " + expires;
+  }
+
+  function getCookie(cname) {
+      var name = cname + "=";
+      var ca = document.cookie.split(';');
+      for(var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+          }
+      }
+      return "";
+  }
+
+  function checkCookie() {
+      var user = getCookie("iname");
+      if (user != "") {
+          Materialize.toast("Hey " + user + "! Welcome back.", 3000);
+          $("#wname").html("Hey " + user + "!");
+          $("#menumessage").html("Hey " + user + "! Welcome back.");
+
+          $("#menushow").show();
+          $("#signup").hide();
+
+          if(!getCookie('iaddtohome')) {
+              $("#addtohome").html("Add Icebreakr To Your Homescreen");
+          }
+      } else {
+          $("#signup").show();
+          $("#menushow").hide();
+      }
+  }
+  </script>
+
+  <script>
+  $(document).ready(function() {
+  $('.modal-trigger').leanModal();
+});
+  </script>
+
+
+</head>
+<body style="background-color: #860000">
+  <div class="fixed-action-btn horizontal" style="bottom: 25px; right: 24px;">
+      <a class="btn-floating btn-large" style="background-color: #FFF;" onclick="end()">
+        <i class="material-icons" style="color: #860000">play_arrow</i>
+      </a>
+    </div>
+  <div class="valign-wrapper row center-align login-box">
+    <div class="col s10 pull-s1 m6 pull-m3 l4 pull-l4" style="background-color: #fff; border-radius: 10px;">
+
+      <h1 id="top" style="color: #860000"><b>Who's Playing?</b></h1>
+      <br>
+      <div style="font-family: 'Abel', sans-serif;" id="head2"></div>
+
+      <p id="bbbb">&nbsp;</p>
+      <p id="strin" style="font-family: 'Abel', sans-serif; color: #860000"></p>
+      <div class="row">
+
+      <input type="text" id="imp" value="" onkeyup='document.getElementById("strin").innerHTML = document.getElementById("imp").value'>
+      <br>
+      <a class="btn waves-effect waves-light" style="background-color: #860000; color: #fff" id="add" onclick='clearandnext()'>Add</a>
+      <p id="bbbbb">&nbsp;</p>
+
+
+    <style>
+    #imp {
+    padding: 10px;
+    font-family: 'Abel', sans-serif;
+    width: 70%;
+    height: auto;
+    color: #860000;
+    border: solid 5px #860000;
+    transition: border 0.3s;
+    }
+    #imp:focus {
+    border: solid 5px #fff;
+    }
+
+    .sButton {
+    background-color:#fff; /* #86BBD8 */
+    color:#86BBD8;
+    display:inline-block;
+    cursor:pointer;
+    font-family: 'Abel', sans-serif;
+    font-size:16px;
+    padding:10px 24px;
+    text-decoration:none;
+    }
+    </style>
+
+
+    </div>
+
+
+    <style>
+
+    html, body {
+               height: 100%;
+               margin: 0;
+
+           }
+
+    #floater {
+        float: left;
+        height: 50%;
+        width: 100%;
+        margin-bottom: -50px;
+    }
+
+    #child {
+        clear: both;
+
+    }
+    </style>
+
+    <script>
+    names = [];
+
+    function namesToString(n) {
+    	var n1 = n.slice();
+    	var s = "";
+        if(n1.length < 2) {
+        	s = s + n1;
+        } else {
+        	s = s + n1.pop();
+            while(n1.length > 1) {
+        		s = s + ", " + n1.pop();
+            }
+            s = s + " and " + n1.pop();
+        }
+
+        return s;
+    }
+
+    var index = 0;
+
+    var cnamez = JSON.parse(getCookie("nameList"));
+    //alert(cnamez);
+    for(var c = 0; c < cnamez.length; c++)
+    {
+      names.push(cnamez[c]);
+      index++;
+      $("#head2").html("<p id=\"txt\" onclick='$(\"#txt\").fadeOut(); names = []' style='color: #8b0000; padding-top: 5px; padding-bottom: 5px;' >" + namesToString(names) + "</p>");
+
+      /*
+      $("#head2").append("<p id=\"x" + index + "\" onclick='$(\"#x" + index + "\").fadeOut(); removeFirst(\"" + cnamez[c] + "\");'  style='background-color: #FFF; color: #8b0000; padding-top: 5px; padding-bottom: 5px;' >" + cnamez[c] + "</p>");
+      */
+    }
+
+    function removeFirst(x) {
+      for (var i=names.length-1; i>=0; i--) {
+          if (names[i] === x) {
+              names.splice(i, 1);
+              break;
+          }
+      }
+    }
+
+
+
+
+    function clearandnext() {
+
+      person = document.getElementById("imp").value;
+
+      while(((person.indexOf(">") != -1)||(person.indexOf("<") != -1))||(person.indexOf("/") != -1))
+      {
+        person = person.replace("<", "");
+        person = person.replace(">", "");
+        person = person.replace("/", "");
+      }
+      names.push(person);
+
+      index++;
+
+      var str = namesToString(names);
+      /*
+      $("#head2").html("<p id=\"x" + index + "\" onclick='$(\"#x" + index + "\").fadeOut(); removeFirst(\"" + person + "\");' style='background-color: #FFF; color: #8b0000; padding-top: 5px; padding-bottom: 5px;' >" + person + "</p>");
+      */
+      $("#head2").html("<p id=\"txt\" onclick='$(\"#txt\").fadeOut(); names = []' style='color: #8b0000; padding-top: 5px; padding-bottom: 5px;' >" + namesToString(names) + "</p>");
+
+      document.getElementById("imp").value = "";
+      document.getElementById("strin").innerHTML = "";
+
+    }
+
+
+    function end() {
+      //alert("END: " + names);
+
+      setCookie("nameList", JSON.stringify(names), 365);
+      window.location.assign("main.html");
+
+    }
+
+    </script>
+
+    </div>
+  </div>
+
+  <style>
+  html,
+body,
+.login-box {
+height: 100%;
+}
+  </style>
+
+  </body>
+</html>
